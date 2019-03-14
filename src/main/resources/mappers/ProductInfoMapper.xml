@@ -9,7 +9,7 @@
       <arg column="product_stock" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="product_description" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="product_icon" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="product_status" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <arg column="product_status" jdbcType="TINYINT" javaType="java.lang.Integer" />
       <arg column="category_type" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
       <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
@@ -152,4 +152,18 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where product_id = #{productId,jdbcType=VARCHAR}
   </update>
+
+  <select id="findAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from product_info
+  </select>
+
+  <select id="findProductBySaleStatus" parameterType="Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from product_info
+    where product_status = #{saleStatus}
+  </select>
+
 </mapper>

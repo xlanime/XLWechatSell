@@ -1,31 +1,37 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 72000
+
 spring:
   datasource:
-    name: sell_datasource
+    name: mysql_test
     type: com.alibaba.druid.pool.DruidDataSource
-    #druid\u76F8\u5173\u914D\u7F6E
+    #druid相关配置
     druid:
-      #\u76D1\u63A7\u7EDF\u8BA1\u62E6\u622A\u7684filters
+      #监控统计拦截的filters
       filters: stat
-      driver-class-name: com.mysql.jdbc.Driver
-      #\u57FA\u672C\u5C5E\u6027
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      #基本属性
       url: jdbc:mysql://localhost:3306/sell?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: root
       password: wozai80
-      #\u914D\u7F6E\u521D\u59CB\u5316\u5927\u5C0F/\u6700\u5C0F/\u6700\u5927
+      #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
       max-active: 20
-      #\u83B7\u53D6\u8FDE\u63A5\u7B49\u5F85\u8D85\u65F6\u65F6\u95F4
+      #获取连接等待超时时间
       max-wait: 60000
-      #\u95F4\u9694\u591A\u4E45\u8FDB\u884C\u4E00\u6B21\u68C0\u6D4B\uFF0C\u68C0\u6D4B\u9700\u8981\u5173\u95ED\u7684\u7A7A\u95F2\u8FDE\u63A5
+      #间隔多久进行一次检测，检测需要关闭的空闲连接
       time-between-eviction-runs-millis: 60000
-      #\u4E00\u4E2A\u8FDE\u63A5\u5728\u6C60\u4E2D\u6700\u5C0F\u751F\u5B58\u7684\u65F6\u95F4
+      #一个连接在池中最小生存的时间
       min-evictable-idle-time-millis: 300000
       validation-query: SELECT 'x'
       test-while-idle: true
       test-on-borrow: false
       test-on-return: false
-      #\u6253\u5F00PSCache\uFF0C\u5E76\u6307\u5B9A\u6BCF\u4E2A\u8FDE\u63A5\u4E0APSCache\u7684\u5927\u5C0F\u3002oracle\u8BBE\u4E3Atrue\uFF0Cmysql\u8BBE\u4E3Afalse\u3002\u5206\u5E93\u5206\u8868\u8F83\u591A\u63A8\u8350\u8BBE\u7F6E\u4E3Afalse
+      #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false
       pool-prepared-statements: false
       max-pool-prepared-statement-per-connection-size: 20
 
@@ -33,7 +39,16 @@ mybatis:
   mapper-locations: classpath:mappers/*.xml
   type-aliases-package: com.xlearn.sell.pojo
 
-#\u81EA\u5B9A\u4E49logback\u914D\u7F6E\u6587\u4EF6
+#添加分页配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+#设置自定义logback配置文件
 logging:
   config: classpath:logback-xlsell.xml
+  level:
+    com.example.demo.dao: info
 

@@ -1,6 +1,10 @@
 package com.xlearn.sell.dao;
 
 import com.xlearn.sell.pojo.ProductCategory;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Description:商品类目Mapper
@@ -8,6 +12,8 @@ import com.xlearn.sell.pojo.ProductCategory;
  * @author 轩辚
  * @date 2019/3/14 18:27
  */
+@Mapper
+@Component(value = "productCategoryMapper")
 public interface ProductCategoryMapper {
     /**
      * 根据主键删除
@@ -50,4 +56,10 @@ public interface ProductCategoryMapper {
      * @return 修改结果
      */
     int updateByPrimaryKey(ProductCategory record);
+
+    /**
+     * 查询所有商品类目
+     * @return 所有商品类目
+     */
+    List<ProductCategory> findAll();
 }

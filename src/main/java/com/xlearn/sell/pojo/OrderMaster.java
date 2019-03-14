@@ -44,12 +44,12 @@ public class OrderMaster {
     private BigDecimal orderAmount;
 
     /**
-     * 订单状态, 默认 0 新下单
+     * 订单状态, 默认 0 新下单,1 已关闭订单
      */
     private Byte orderStatus;
 
     /**
-     * 支付状态, 默认 0 未支付
+     * 支付状态, 默认 0 未支付，1 已支付
      */
     private Byte payStatus;
 

@@ -1,6 +1,10 @@
 package com.xlearn.sell.dao;
 
 import com.xlearn.sell.pojo.OrderDetail;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Description:订单详情Mapper
@@ -8,6 +12,8 @@ import com.xlearn.sell.pojo.OrderDetail;
  * @author 轩辚
  * @date 2019/3/14 18:27
  */
+@Mapper
+@Component(value = "orderDetailMapper")
 public interface OrderDetailMapper {
     /**
      * 根据主键删除
@@ -50,4 +56,10 @@ public interface OrderDetailMapper {
      * @return 修改结果
      */
     int updateByPrimaryKey(OrderDetail record);
+
+    /**
+     * 查询所有订单详情
+     * @return 修改结果
+     */
+    List<OrderDetail> findAll();
 }

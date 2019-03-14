@@ -1,6 +1,10 @@
 package com.xlearn.sell.dao;
 
 import com.xlearn.sell.pojo.ProductInfo;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Description:商品信息Mapper
@@ -8,6 +12,8 @@ import com.xlearn.sell.pojo.ProductInfo;
  * @author 轩辚
  * @date 2019/3/14 18:27
  */
+@Mapper
+@Component(value = "productInfoMapper")
 public interface ProductInfoMapper {
     /**
      * 根据主键删除
@@ -50,4 +56,17 @@ public interface ProductInfoMapper {
      * @return 修改结果
      */
     int updateByPrimaryKey(ProductInfo record);
+
+    /**
+     * 查找所有商品
+     * @return 所有的商品
+     */
+    List<ProductInfo> findAll();
+
+    /**
+     * 根据销售状态查找商品
+     * @param saleStatus 销售状态 0在售，1下架
+     * @return 在售的商品列表
+     */
+    List<ProductInfo> findProductBySaleStatus(Integer saleStatus);
 }

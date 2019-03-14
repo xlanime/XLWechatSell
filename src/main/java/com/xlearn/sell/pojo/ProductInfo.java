@@ -46,7 +46,7 @@ public class ProductInfo {
     /**
      * 商品状态,0正常1下架
      */
-    private Byte productStatus;
+    private Integer productStatus;
 
     /**
      * 类目编号
@@ -63,7 +63,7 @@ public class ProductInfo {
      */
     private Date updateTime;
 
-    public ProductInfo(String productId, String productName, BigDecimal productPrice, Integer productStock, String productDescription, String productIcon, Byte productStatus, Integer categoryType, Date createTime, Date updateTime) {
+    public ProductInfo(String productId, String productName, BigDecimal productPrice, Integer productStock, String productDescription, String productIcon, Integer productStatus, Integer categoryType, Date createTime, Date updateTime) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;

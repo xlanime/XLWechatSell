@@ -1,6 +1,10 @@
 package com.xlearn.sell.dao;
 
 import com.xlearn.sell.pojo.SellerInfo;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Description:卖家信息Mapper
@@ -8,6 +12,8 @@ import com.xlearn.sell.pojo.SellerInfo;
  * @author 轩辚
  * @date 2019/3/14 18:27
  */
+@Mapper
+@Component(value = "sellerInfoMapper")
 public interface SellerInfoMapper {
     /**
      * 根据主键删除
@@ -50,4 +56,10 @@ public interface SellerInfoMapper {
      * @return 修改结果
      */
     int updateByPrimaryKey(SellerInfo record);
+
+    /**
+     * 查询所有卖家信息
+     * @return 查询的结果
+     */
+    List<SellerInfo> findAll();
 }
