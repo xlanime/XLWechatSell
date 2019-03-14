@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 控制台输出日志 -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level -&#45;&#45; [%21thread] %logger{35} : %m%n</pattern>-->
+        <!--</layout>-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%21thread] %logger{35} : %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Info日志-->
+    <appender name="InfoLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>INFO</level>-->
+        <!--</filter>-->
+        <!--过滤掉ERROR日志-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>./logs/xlsell-%d{yyyy-MM-dd}.%i.info.log</fileNamePattern>
+            <maxHistory>270</maxHistory><!--日志最大保存时间-->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%21thread] %logger{35} : %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ERROR日志-->
+    <appender name="ErrorLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <maxFileSize>100MB</maxFileSize>
+            <fileNamePattern>./logs/xlsell-%d{yyyy-MM-dd}.%i.error.log</fileNamePattern>
+            <maxHistory>270</maxHistory><!--日志最大保存时间-->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%21thread] %logger{35} : %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 将日志写入数据库 -->
+    <!--<appender name="DB-CLASSIC-MYSQL-POOL" class="ch.qos.logback.classic.db.DBAppender">-->
+    <!--<connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">-->
+    <!--<driverClass>com.mysql.jdbc.Driver</driverClass>-->
+    <!--<url>jdbc:mysql://192.168.0.4:13306/hisv13?characterEncoding=UTF-8</url>-->
+    <!--<user>root</user>-->
+    <!--<password>person</password>-->
+    <!--</connectionSource>-->
+    <!--&lt;!&ndash;这里设置日志级别为error&ndash;&gt;-->
+    <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+    <!--<level>info</level>-->
+    <!--<onMatch>ACCEPT</onMatch>-->
+    <!--<onMismatch>DENY</onMismatch>-->
+    <!--</filter>-->
+    <!--</appender>-->
+
+    <logger name="com.gupao" level="INFO"/>
+    <!-- 将日志文件写到数据库 -->
+    <!--<logger name="com.taikang.direct.support.accesslog.persist.AccessLoggerPersistDB" level="INFO">-->
+    <!--<appender-ref ref="DB-CLASSIC-MYSQL-POOL" />-->
+    <!--</logger>-->
+
+    <!-- root下表示整个项目都适用 -->
+    <root level="INFO">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="InfoLogFile"/>
+        <appender-ref ref="ErrorLogFile"/>
+    </root>
+</configuration>
