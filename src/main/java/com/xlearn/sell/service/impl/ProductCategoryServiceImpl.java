@@ -4,6 +4,7 @@ import com.xlearn.sell.dao.ProductCategoryMapper;
 import com.xlearn.sell.pojo.ProductCategory;
 import com.xlearn.sell.service.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author 轩辚
  * @date 2019/3/14 23:49
  */
+@Service("productCategoryService")
 public class ProductCategoryServiceImpl implements ProductCategoryService {
     /**
      * 注入productCategoryMapper

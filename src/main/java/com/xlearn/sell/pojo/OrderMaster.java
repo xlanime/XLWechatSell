@@ -1,5 +1,7 @@
 package com.xlearn.sell.pojo;
 
+import com.xlearn.sell.common.OrderStatusEnum;
+import com.xlearn.sell.common.PayStatusEnum;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -44,14 +46,14 @@ public class OrderMaster {
     private BigDecimal orderAmount;
 
     /**
-     * 订单状态, 默认 0 新下单,1 已关闭订单
+     * 订单状态, 默认 0 新下单,1 已关闭订单，2 取消的订单
      */
-    private Byte orderStatus;
+    private Integer orderStatus = OrderStatusEnum.NEW.getCode();
 
     /**
      * 支付状态, 默认 0 未支付，1 已支付
      */
-    private Byte payStatus;
+    private Integer payStatus = PayStatusEnum.WAIT.getCode();
 
     /**
      * 创建时间
@@ -63,7 +65,7 @@ public class OrderMaster {
      */
     private Date updateTime;
 
-    public OrderMaster(String orderId, String buyerName, String buyerPhone, String buyerAddress, String buyerOpenid, BigDecimal orderAmount, Byte orderStatus, Byte payStatus, Date createTime, Date updateTime) {
+    public OrderMaster(String orderId, String buyerName, String buyerPhone, String buyerAddress, String buyerOpenid, BigDecimal orderAmount, Integer orderStatus, Integer payStatus, Date createTime, Date updateTime) {
         this.orderId = orderId;
         this.buyerName = buyerName;
         this.buyerPhone = buyerPhone;

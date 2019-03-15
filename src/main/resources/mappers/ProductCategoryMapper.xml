@@ -96,6 +96,6 @@
   <select id="findAll" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
-    from producr_category
+    from product_category
   </select>
 </mapper>

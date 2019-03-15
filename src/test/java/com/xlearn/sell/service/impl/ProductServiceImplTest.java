@@ -61,7 +61,7 @@ public class ProductServiceImplTest {
     public void findAll() {
         //查询所有商品,如果查询到商品认为测试通过
         PageHelper.startPage(2,3);
-        List<ProductInfo> productInfos = productService.findAll(2,3);
+        List<ProductInfo> productInfos = productService.findAll();
         int index = 1;
         for(ProductInfo productInfo:productInfos){
             log.info("第{}条数据：{}",index,productInfo.toString());
@@ -73,7 +73,7 @@ public class ProductServiceImplTest {
     public void findBySaleStatus(){
         PageHelper.startPage(2,3);
         //查询所有在售商品,如果查询到商品认为测试通过
-        List<ProductInfo> productInfos = productService.findBySaleStatus(2,3, ProductSaleStatusEnum.UP.getCode());
+        List<ProductInfo> productInfos = productService.findBySaleStatus(ProductSaleStatusEnum.UP.getCode());
         int index = 1;
         for(ProductInfo productInfo:productInfos){
             log.info("第{}条数据：{}",index,productInfo.toString());

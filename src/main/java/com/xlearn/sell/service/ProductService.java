@@ -1,6 +1,7 @@
 package com.xlearn.sell.service;
 
 import com.xlearn.sell.pojo.ProductInfo;
+import com.xlearn.sell.vo.ProductItemVo;
 
 import java.util.List;
 
@@ -48,18 +49,26 @@ public interface ProductService {
 
     /**
      * 查询所有
-     * @param page 页码
-     * @param limit 每页数据条数
      * @return 查询到的商品信息列表
      */
-    List<ProductInfo> findAll(Integer page,Integer limit);
+    List<ProductInfo> findAll();
 
     /**
-     * 根据是否下架查询商品信息
-     * @param page 页码
-     * @param limit 每页数据条数
+     * 根据是否下架查询商品信息（不分页）
      * @param saleStatus 商品是否下架，0在售，1下架
      * @return
      */
-    List<ProductInfo> findBySaleStatus(Integer page,Integer limit,Integer saleStatus);
+    List<ProductInfo> findBySaleStatus(Integer saleStatus);
+
+    /**
+     * 增加库存
+     * @param productItemVoList 增加库存的商品信息（ID及增加的数量）
+     */
+    void increaseStock(List<ProductItemVo> productItemVoList);
+
+    /**
+     * 扣减库存
+     * @param productItemVoList 扣减库存的商品信息（ID及减少的数量）
+     */
+    void decreaseStock(List<ProductItemVo> productItemVoList);
 }

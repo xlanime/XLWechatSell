@@ -51,4 +51,11 @@ public interface OrderDetailService {
      * @return 查询到的订单详情信息列表
      */
     List<OrderDetail> findAll();
+
+    /**
+     * 查询指定订单下的所有订单详情
+     * @param orderId 订单Id
+     * @return 查询到的订单详情信息列表
+     */
+    List<OrderDetail> findByOrderId(String orderId);
 }

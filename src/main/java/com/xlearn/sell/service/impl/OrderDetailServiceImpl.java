@@ -22,8 +22,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     /**
      * 注入orderDetailMapper
      */
-    @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    public void setOrderDetailMapper(OrderDetailMapper orderDetailMapper) {
+        this.orderDetailMapper = orderDetailMapper;
+    }
 
     /**
      * 新增
@@ -88,5 +91,16 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public List<OrderDetail> findAll() {
         return orderDetailMapper.findAll();
+    }
+
+    /**
+     * 查询指定订单下的所有订单详情
+     *
+     * @param orderId 订单Id
+     * @return 查询到的订单详情信息列表
+     */
+    @Override
+    public List<OrderDetail> findByOrderId(String orderId) {
+        return orderDetailMapper.findByOrderId(orderId);
     }
 }

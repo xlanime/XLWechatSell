@@ -72,4 +72,11 @@ public interface OrderMasterMapper {
      */
     List<OrderMaster> findOrderByPayStatusAndOrderStatus(@Param(value = "payStatus") Integer payStatus,
                                                          @Param(value = "orderStatus") Integer orderStatus);
+
+    /**
+     * 查询所有订单详情
+     * @return 修改结果
+     */
+    List<OrderMaster> findListByOpenId(String openId);
+
 }

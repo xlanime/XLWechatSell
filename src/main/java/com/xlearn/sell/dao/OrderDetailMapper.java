@@ -62,4 +62,10 @@ public interface OrderDetailMapper {
      * @return 修改结果
      */
     List<OrderDetail> findAll();
+
+    /**
+     * 查询所有订单详情
+     * @return 修改结果
+     */
+    List<OrderDetail> findByOrderId(String orderId);
 }

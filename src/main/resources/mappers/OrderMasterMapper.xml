@@ -188,4 +188,11 @@
             </if>
         </where>
     </select>
+
+    <select id="findListByOpenId" parameterType="string" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from order_master
+        where buyer_openid = #{openId}
+    </select>
 </mapper>

@@ -1,10 +1,14 @@
 package com.xlearn.sell.service.impl;
 
+import com.xlearn.sell.common.ResultEnum;
 import com.xlearn.sell.dao.ProductInfoMapper;
+import com.xlearn.sell.exception.SellException;
 import com.xlearn.sell.pojo.ProductInfo;
 import com.xlearn.sell.service.ProductService;
+import com.xlearn.sell.vo.ProductItemVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -83,19 +87,64 @@ public class ProductServiceImpl implements ProductService {
      * @return 查询到的商品信息列表
      */
     @Override
-    public List<ProductInfo> findAll(Integer page,Integer limit) {
+    public List<ProductInfo> findAll() {
         return productInfoMapper.findAll();
     }
 
     /**
      * 根据是否下架查询商品信息
-     * @param page 页码
-     * @param limit 每页数据条数
      * @param saleStatus 商品是否下架，0在售，1下架
      * @return
      */
     @Override
-    public List<ProductInfo> findBySaleStatus(Integer page,Integer limit,Integer saleStatus) {
+    public List<ProductInfo> findBySaleStatus(Integer saleStatus) {
         return productInfoMapper.findProductBySaleStatus(saleStatus);
+    }
+
+    /**
+     * 增加库存
+     *
+     * @param productItemVoList 增加库存的商品信息（ID及增加的数量）
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void increaseStock(List<ProductItemVo> productItemVoList) {
+        for(ProductItemVo productItemVo : productItemVoList) {
+            ProductInfo productInfo = productInfoMapper.selectByPrimaryKey(productItemVo.getProductId());
+            if(null == productInfo){
+                //商品不存在
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+            }
+            //增加后的库存
+            int stock = productInfo.getProductStock() + productItemVo.getProductQuantity();
+            //保存数据到数据库
+            productInfo.setProductStock(stock);
+            productInfoMapper.updateByPrimaryKey(productInfo);
+        }
+    }
+
+    /**
+     * 扣减库存
+     *
+     * @param productItemVoList 扣减库存的商品信息（ID及减少的数量）
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void decreaseStock(List<ProductItemVo> productItemVoList) {
+        for(ProductItemVo productItemVo : productItemVoList) {
+            ProductInfo productInfo = productInfoMapper.selectByPrimaryKey(productItemVo.getProductId());
+            if(null == productInfo){
+                //商品不存在
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+            }
+            //扣减后的库存如果小于0，认为库存不足，抛出异常并回滚事务
+            int stock = productInfo.getProductStock() - productItemVo.getProductQuantity();
+            if(stock < 0){
+                throw new SellException(ResultEnum.PRODUCT_LOW_STOCK);
+            }
+            //库存充足则进行扣减，并保存
+            productInfo.setProductStock(stock);
+            productInfoMapper.updateByPrimaryKey(productInfo);
+        }
     }
 }

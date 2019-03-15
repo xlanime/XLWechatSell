@@ -1,6 +1,7 @@
 package com.xlearn.sell.service;
 
 import com.xlearn.sell.pojo.OrderMaster;
+import com.xlearn.sell.vo.OrderInfoVo;
 
 import java.util.List;
 
@@ -13,10 +14,10 @@ import java.util.List;
 public interface OrderMasterService {
     /**
      * 新增
-     * @param orderMaster 订单信息
+     * @param orderInfoVo 订单信息
      * @return 新增结果
      */
-    int insert(OrderMaster orderMaster);
+    OrderInfoVo insert(OrderInfoVo orderInfoVo);
 
     /**
      * 根据主键删除
@@ -44,7 +45,14 @@ public interface OrderMasterService {
      * @param id 订单id
      * @return 查询到的订单信息
      */
-    OrderMaster findById(String id);
+    OrderInfoVo findById(String id);
+
+    /**
+     * 查询用户当前页的订单列表
+     * @param openId 用户微信openid
+     * @return 查询到的订单信息列表
+     */
+    List<OrderInfoVo> findListByOpenId(String openId);
 
     /**
      * 查询所有
@@ -59,4 +67,11 @@ public interface OrderMasterService {
      * @return 所有已支付订单
      */
     List<OrderMaster> findOrderByPayStatusAndOrderStatus(Integer payStatus,Integer orderStatus);
+
+    /**
+     * 取消订单
+     * @param orderId 需要取消的订单Id
+     * @return 取消的结果
+     */
+    OrderMaster orderCancel(String orderId);
 }
