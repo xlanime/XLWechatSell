@@ -1,7 +1,9 @@
 package com.xlearn.sell.service;
 
+import com.xlearn.sell.dto.OrderDto;
 import com.xlearn.sell.pojo.OrderMaster;
 import com.xlearn.sell.vo.OrderInfoVo;
+import org.hibernate.criterion.Order;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ public interface OrderMasterService {
      * @param orderInfoVo 订单信息
      * @return 新增结果
      */
-    OrderInfoVo insert(OrderInfoVo orderInfoVo);
+    String insert(OrderInfoVo orderInfoVo);
 
     /**
      * 根据主键删除
@@ -45,7 +47,7 @@ public interface OrderMasterService {
      * @param id 订单id
      * @return 查询到的订单信息
      */
-    OrderInfoVo findById(String id);
+    OrderDto findById(String id);
 
     /**
      * 查询用户当前页的订单列表
@@ -64,14 +66,28 @@ public interface OrderMasterService {
      * 根据支付状态及是否关闭查询订单
      * @param payStatus 支付状态 0未支付，1已支付
      * @param orderStatus 订单状态 0新订单，1已关闭
-     * @return 所有已支付订单
+     * @return 所有符合条件的订单
      */
-    List<OrderMaster> findOrderByPayStatusAndOrderStatus(Integer payStatus,Integer orderStatus);
+    List<OrderDto> findOrderByPayStatusAndOrderStatus(Integer payStatus,Integer orderStatus);
 
     /**
      * 取消订单
      * @param orderId 需要取消的订单Id
      * @return 取消的结果
      */
-    OrderMaster orderCancel(String orderId);
+    OrderDto orderCancel(String orderId);
+
+    /**
+     * 结束订单
+     * @param orderDto 需要结束的订单
+     * @return 结束订单的结果
+     */
+    OrderDto orderFinish(OrderDto orderDto);
+
+    /**
+     * 支付订单
+     * @param orderDto 需要支付的订单
+     * @return 支付的结果
+     */
+    OrderDto orderPay(OrderDto orderDto);
 }

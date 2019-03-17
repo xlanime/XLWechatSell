@@ -3,8 +3,10 @@ package com.xlearn.sell.service.impl;
 import com.xlearn.sell.common.OrderStatusEnum;
 import com.xlearn.sell.common.PayStatusEnum;
 import com.xlearn.sell.common.ResultEnum;
+import com.xlearn.sell.converter.OrderMaster2OrderDtoConverter;
 import com.xlearn.sell.converter.OrderMaster2OrderInfoVoConverter;
 import com.xlearn.sell.dao.OrderMasterMapper;
+import com.xlearn.sell.dto.OrderDto;
 import com.xlearn.sell.exception.SellException;
 import com.xlearn.sell.pojo.OrderDetail;
 import com.xlearn.sell.pojo.OrderMaster;
@@ -15,6 +17,7 @@ import com.xlearn.sell.utils.UUIDUtil;
 import com.xlearn.sell.vo.OrderInfoVo;
 import com.xlearn.sell.vo.ProductItemVo;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,7 +73,7 @@ public class OrderMasterServiceImpl implements OrderMasterService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderInfoVo insert(OrderInfoVo orderInfoVo) {
+    public String insert(OrderInfoVo orderInfoVo) {
         //获得UUID
         String orderId = UUIDUtil.getShortUUID();
         log.info("开始创建订单，订单id为{}",orderId);
@@ -109,7 +112,7 @@ public class OrderMasterServiceImpl implements OrderMasterService {
         //4.扣减库存
         productService.decreaseStock(productItemVoList);
         log.info("扣减库存完成，订单创建完毕");
-        return orderInfoVo;
+        return orderId;
     }
 
     /**
@@ -152,7 +155,7 @@ public class OrderMasterServiceImpl implements OrderMasterService {
      * @return 查询到的订单信息
      */
     @Override
-    public OrderInfoVo findById(String id) {
+    public OrderDto findById(String id) {
         OrderMaster orderMaster = orderMasterMapper.selectByPrimaryKey(id);
         if(null == orderMaster){
             //订单不存在
@@ -164,16 +167,16 @@ public class OrderMasterServiceImpl implements OrderMasterService {
             throw new SellException(ResultEnum.ORDER_DETAIL_NOT_EXIST);
         }
         //按照API封装出参
-        OrderInfoVo orderInfoVo = new OrderInfoVo();
-        BeanUtils.copyProperties(orderMaster,orderInfoVo);
-        List<ProductItemVo> productItemVoList = new ArrayList<>();
-        for(OrderDetail orderDetail:orderDetailList){
-            ProductItemVo productItemVo = new ProductItemVo();
-            BeanUtils.copyProperties(orderDetail,productItemVo);
-            productItemVoList.add(productItemVo);
-        }
-        orderInfoVo.setProductItemVoList(productItemVoList);
-        return orderInfoVo;
+//        OrderInfoVo orderInfoVo = new OrderInfoVo();
+//        BeanUtils.copyProperties(orderMaster,orderInfoVo);
+//        List<ProductItemVo> productItemVoList = new ArrayList<>();
+//        for(OrderDetail orderDetail:orderDetailList){
+//            ProductItemVo productItemVo = new ProductItemVo();
+//            BeanUtils.copyProperties(orderDetail,productItemVo);
+//            productItemVoList.add(productItemVo);
+//        }
+//        orderInfoVo.setProductItemVoList(productItemVoList);
+        return OrderMaster2OrderDtoConverter.convert(orderMaster);
     }
 
     /**
@@ -205,8 +208,11 @@ public class OrderMasterServiceImpl implements OrderMasterService {
      * @return 所有已支付订单
      */
     @Override
-    public List<OrderMaster> findOrderByPayStatusAndOrderStatus(Integer payStatus,Integer orderStatus) {
-        return orderMasterMapper.findOrderByPayStatusAndOrderStatus(payStatus,orderStatus);
+    public List<OrderDto> findOrderByPayStatusAndOrderStatus(Integer payStatus,Integer orderStatus) {
+
+        List<OrderMaster> orderMasterList = orderMasterMapper.findOrderByPayStatusAndOrderStatus(payStatus,orderStatus);
+        List<OrderDto> orderDtoList = OrderMaster2OrderDtoConverter.convert(orderMasterList);
+        return orderDtoList;
     }
 
     /**
@@ -221,14 +227,14 @@ public class OrderMasterServiceImpl implements OrderMasterService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderMaster orderCancel(String orderId) {
+    public OrderDto orderCancel(String orderId) {
         OrderMaster orderMaster = orderMasterMapper.selectByPrimaryKey(orderId);
         if(null == orderMaster){
             throw new SellException(ResultEnum.ORDER_NOT_EXIST);
         }
         //1.判断订单状态：只有“新订单”状态的订单可以取消
         if(!OrderStatusEnum.NEW.getCode().equals(orderMaster.getOrderStatus())){
-            log.warn("当前订单{},订单状态为{},不支持取消",orderId,orderMaster.getOrderStatus());
+            log.warn("【取消订单】当前订单{},订单状态为{},不支持取消",orderId,orderMaster.getOrderStatus());
             throw new SellException(ResultEnum.ORDER_CAN_NOT_CANCEL);
         }
 
@@ -236,14 +242,14 @@ public class OrderMasterServiceImpl implements OrderMasterService {
         orderMaster.setOrderStatus(OrderStatusEnum.CANCEL.getCode());
         int updateResult = orderMasterMapper.updateByPrimaryKey(orderMaster);
         if(updateResult < 1){
-            log.warn("订单{}取消失败",orderId);
+            log.warn("【取消订单】订单{}取消失败",orderId);
             throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
         }
 
         //3.返还库存
         List<OrderDetail> orderDetailList = orderDetailService.findByOrderId(orderId);
         if(CollectionUtils.isEmpty(orderDetailList)){
-            log.warn("订单{} 订单详情为空",orderId);
+            log.warn("【取消订单】订单{} 订单详情为空",orderId);
             throw new SellException(ResultEnum.ORDER_DETAIL_NOT_EXIST);
         }
         List<ProductItemVo> productItemVoList = orderDetailList.stream().map(e->
@@ -256,6 +262,70 @@ public class OrderMasterServiceImpl implements OrderMasterService {
             //Todo 完成支付相关的代码
         }
 
-        return orderMaster;
+        return OrderMaster2OrderDtoConverter.convert(orderMaster);
+    }
+
+    /**
+     * 结束订单:
+     *  1.判断订单状态：只有新下单的订单可以结束
+     *  2.修改订单状态并保存到数据库
+     *
+     * @param orderDto 需要结束的订单
+     * @return 结束订单的结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OrderDto orderFinish(OrderDto orderDto) {
+        //1.判断订单状态
+        if(!OrderStatusEnum.NEW.getCode().equals(orderDto.getOrderStatus())){
+            log.warn("【结束订单】当前订单{},订单状态为{},不支持结束",orderDto.getOrderId(),orderDto.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_CAN_NOT_CANCEL);
+        }
+        //2.修改订单状态
+        orderDto.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+        updateOrderStatus(orderDto);
+        return orderDto;
+    }
+
+    /**
+     * 支付订单
+     * 1.判断订单状态（只有新创建的订单可以支付）
+     * 2.判断支付状态（只有未支付的订单可以支付）
+     * 3.修改支付状态
+     *
+     * @param orderDto 需要支付的订单
+     * @return 支付的结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public OrderDto orderPay(OrderDto orderDto) {
+        //1.判断订单状态
+        if(!OrderStatusEnum.NEW.getCode().equals(orderDto.getOrderStatus())){
+            log.warn("【支付订单】当前订单{},订单状态为{},不支持支付",orderDto.getOrderId(),orderDto.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_CAN_NOT_CANCEL);
+        }
+        //2.判断支付状态
+        if(!PayStatusEnum.WAIT.getCode().equals(orderDto.getPayStatus())){
+            log.warn("【支付订单】当前订单{},订单状态为{},不支持支付",orderDto.getOrderId(),orderDto.getPayStatus());
+            throw new SellException(ResultEnum.ORDER_CAN_NOT_PAY);
+        }
+        //3.修改订单状态
+        orderDto.setPayStatus(PayStatusEnum.SUCCESS.getCode());
+        updateOrderStatus(orderDto);
+        return orderDto;
+    }
+
+    /**
+     * 修改订单状态
+     * @param orderDto 需要修改状态的订单
+     */
+    private void updateOrderStatus(OrderDto orderDto){
+        OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDto,orderMaster);
+        int finishResult = orderMasterMapper.updateByPrimaryKeySelective(orderMaster);
+        if(finishResult < 1){
+            log.warn("订单{}修改状态出错",orderDto.getOrderId());
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
     }
 }

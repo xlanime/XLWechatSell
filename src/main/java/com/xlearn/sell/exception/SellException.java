@@ -23,4 +23,9 @@ public class SellException extends RuntimeException{
         this.code = resultEnum.getCode();
     }
 
+    public SellException(Integer errorCode,String errorMsg){
+        super(errorMsg);
+        this.code = errorCode;
+    }
+
 }

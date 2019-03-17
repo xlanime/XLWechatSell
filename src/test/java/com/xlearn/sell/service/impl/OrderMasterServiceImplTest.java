@@ -2,6 +2,7 @@ package com.xlearn.sell.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xlearn.sell.common.OrderStatusEnum;
+import com.xlearn.sell.dto.OrderDto;
 import com.xlearn.sell.pojo.OrderMaster;
 import com.xlearn.sell.vo.OrderInfoVo;
 import com.xlearn.sell.vo.ProductItemVo;
@@ -57,8 +58,8 @@ public class OrderMasterServiceImplTest {
         orderInfoVo.setProductItemVoList(productItemVoList);
 
         //测试下单接口
-        OrderInfoVo result = orderMasterService.insert(orderInfoVo);
-        assertNotNull(result);
+        String orderId = orderMasterService.insert(orderInfoVo);
+        assertNotNull(orderId);
     }
 
     @Test
@@ -75,9 +76,9 @@ public class OrderMasterServiceImplTest {
 
     @Test
     public void findById() {
-        OrderInfoVo orderInfoVo = orderMasterService.findById("66490420b7194ed5a48f54478030d232");
-        log.info(JSONObject.toJSONString(orderInfoVo));
-        assertNotNull(orderInfoVo);
+        OrderDto orderDto = orderMasterService.findById("66490420b7194ed5a48f54478030d232");
+        log.info(JSONObject.toJSONString(orderDto));
+        assertNotNull(orderDto);
     }
 
     @Test
@@ -90,8 +91,8 @@ public class OrderMasterServiceImplTest {
 
     @Test
     public void orderCancel(){
-        OrderMaster orderMaster = orderMasterService.orderCancel("66490420b7194ed5a48f54478030d232");
-        log.info(JSONObject.toJSONString(orderMaster));
-        assertEquals(OrderStatusEnum.CANCEL.getCode(),orderMaster.getOrderStatus());
+        OrderDto orderDto = orderMasterService.orderCancel("66490420b7194ed5a48f54478030d232");
+        log.info(JSONObject.toJSONString(orderDto));
+        assertEquals(OrderStatusEnum.CANCEL.getCode(),orderDto.getOrderStatus());
     }
 }

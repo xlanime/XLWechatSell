@@ -29,8 +29,8 @@ public class OrderMaster2OrderInfoVoConverter {
     }
 
     /**
-     * 将OrderMaster转换为OrderInfoVo
-     * @param orderMasterList 需要转换的orderMaster对象
+     * 将List<OrderMaster>转换为List<OrderInfoVo>
+     * @param orderMasterList 需要转换的orderMaster列表
      * @return 转换结果
      */
     public static List<OrderInfoVo> convert(List<OrderMaster> orderMasterList){
